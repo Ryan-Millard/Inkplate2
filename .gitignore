@@ -43,3 +43,6 @@
 
 # ENV files containing sensitive info (e.g. API keys)
 env.h
+
+# Ignore Windows batch files
+*.bat
