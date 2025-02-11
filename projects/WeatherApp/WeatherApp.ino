@@ -19,7 +19,7 @@ constexpr long GMT_OFFSET_SEC = 7200;  // GMT+2 for Johannesburg
 constexpr int DAYLIGHT_OFFSET_SEC = 0;
 
 // Sleep timer settings
-constexpr unsigned int SLEEP_TIME = 24 * 60 * 60; // Time to sleep for 24 hours (in seconds)
+constexpr unsigned int SLEEP_TIME = 3 * 60 * 60; // Time to sleep for 3 hours (in seconds)
 
 // Geolocation API endpoint
 constexpr char* GEO_LOCATION_URL = "https://ipinfo.io/json";
@@ -41,6 +41,20 @@ enum WeatherChar : char {
 	MIST = 77,
 	UNKNOWN = 64
 };
+// Helper function for WeatherChar
+char getWeatherChar(const char* description) {
+	String descriptionUpper = String(description); // Convert to String
+	descriptionUpper.toUpperCase(); // Convert to uppercase
+
+	if(descriptionUpper == "CLEAR") { return WeatherChar::CLEAR; }
+	else if(descriptionUpper == "CLOUDS") { return WeatherChar::CLOUDS; }
+	else if(descriptionUpper == "RAIN") { return WeatherChar::RAIN; }
+	else if(descriptionUpper == "DRIZZLE") { return WeatherChar::DRIZZLE; }
+	else if(descriptionUpper == "THUNDERSTORM") { return WeatherChar::THUNDERSTORM; }
+	else if(descriptionUpper == "SNOW") { return WeatherChar::SNOW; }
+	else if(descriptionUpper == "MIST") { return WeatherChar::MIST; }
+	else { return WeatherChar::UNKNOWN; }
+}
 
 void setup() {
 	Serial.begin(115200);
@@ -65,7 +79,7 @@ void setup() {
 	for(byte connectionAttempts = 0; WiFi.status() != WL_CONNECTED && connectionAttempts < 20; ++connectionAttempts)
 	{
 		delay(500); // Max time before giving up: 20 * 500 = 10 000ms = 10 seconds
-		Serial.print("Connection Attempt: " + String(connectionAttempts));
+		Serial.println("Connection Attempt: " + String(connectionAttempts));
 	}
 
 	// WiFi failed, end app
@@ -97,7 +111,7 @@ void setup() {
 
 	// Enter deep sleep
 	Serial.println("Going to sleep...");
-	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000);  // Set the timer to wake up after 24 hours (in microseconds)
+	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000);  // Set the timer to wake up after 3 hours (in microseconds)
 	esp_deep_sleep_start(); // Go to deep sleep
 }
 
@@ -152,7 +166,7 @@ void updateWeather() {
 
 	Serial.println("Fetching weather information...");
 	HTTPClient http;
-	String url = "https://api.openweathermap.org/data/2.5/weather?q=" + 
+	String url = "https://api.openweathermap.org/data/2.5/forecast?q=" + 
 		city + "," + countryCode + "&APPID=" + OPEN_WEATHER_MAP_API_KEY + "&units=metric";
 
 	http.begin(url);
@@ -161,23 +175,16 @@ void updateWeather() {
 
 	if (httpCode > 0) {
 		String payload = http.getString();
+		Serial.println("Payload size: " + String(payload.length()));
 		Serial.println("Weather API response: " + payload);
 
-		DynamicJsonDocument doc(2048);
+		DynamicJsonDocument doc(1024);
 		DeserializationError error = deserializeJson(doc, payload);
 
 		if (!error) {
-			float temp = doc["main"]["temp"];
-			float humidity = doc["main"]["humidity"];
-			const char* description = doc["weather"][0]["main"];
-			float windSpeed = doc["wind"]["speed"];
-
-			Serial.printf("Temperature: %.1f°C\n", temp);
-			Serial.printf("Humidity: %.0f%%\n", humidity);
-			Serial.printf("Description: %s\n", description);
-			Serial.printf("Wind Speed: %.1f m/s\n", windSpeed);
-
-			displayWeather(temp, humidity, description, windSpeed);
+			if (doc["list"].is<JsonArray>() && doc["list"].size() > 0 && doc["list"][0]["main"].is<JsonObject>()) {
+				displayWeather(doc);
+			}
 		} else {
 			Serial.println("Weather JSON parsing failed: " + String(error.c_str()));
 		}
@@ -187,7 +194,17 @@ void updateWeather() {
 	http.end();
 }
 
-void displayWeather(float temp, float humidity, const char* description, float windSpeed) {
+void displayWeather(DynamicJsonDocument doc) {
+	float temp = doc["list"][0]["main"]["temp"];
+	float humidity = doc["list"][0]["main"]["humidity"];
+	const char* description = doc["list"][0]["weather"][0]["main"];
+	float windSpeed = doc["list"][0]["wind"]["speed"];
+
+	Serial.printf("Temperature: %.1f°C\n", temp);
+	Serial.printf("Humidity: %.0f%%\n", humidity);
+	Serial.printf("Description: %s\n", description);
+	Serial.printf("Wind Speed: %.1f m/s\n", windSpeed);
+
 	Serial.println("Updating display with weather information...");
 
 	display.clearDisplay();
@@ -212,30 +229,7 @@ void displayWeather(float temp, float humidity, const char* description, float w
 		display.setCursor(5, 76);
 		display.setTextSize(3);
 		display.setFont(&WeatherIcon); // Change to weather icon font
-
-		char weatherCharImg = 0;
-		String descriptionUpper = String(description); // Convert to String
-		descriptionUpper.toUpperCase(); // Now call toUpperCase() directly on the String
-
-		if (descriptionUpper == "CLEAR") {
-			weatherCharImg = WeatherChar::CLEAR;
-		} else if (descriptionUpper == "CLOUDS") {
-			weatherCharImg = WeatherChar::CLOUDS;
-		} else if (descriptionUpper == "RAIN") {
-			weatherCharImg = WeatherChar::RAIN;
-		} else if (descriptionUpper == "DRIZZLE") {
-			weatherCharImg = WeatherChar::DRIZZLE;
-		} else if (descriptionUpper == "THUNDERSTORM") {
-			weatherCharImg = WeatherChar::THUNDERSTORM;
-		} else if (descriptionUpper == "SNOW") {
-			weatherCharImg = WeatherChar::SNOW;
-		} else if (descriptionUpper == "MIST") {
-			weatherCharImg = WeatherChar::MIST;
-		} else {
-			weatherCharImg = WeatherChar::UNKNOWN;
-		}
-
-		display.print(weatherCharImg);
+		display.write( getWeatherChar(description) );
 		display.setFont(nullptr); // Return to normal font (use nullptr instead of null)
 	}
 
@@ -261,5 +255,44 @@ void displayWeather(float temp, float humidity, const char* description, float w
 	display.print(windSpeed, 1);
 	display.print(" m/s");
 
-display.display();
+	// Next forecasts for the rest of the day (in 3-hour intervals)
+	display.fillRect(75, 45, 128, 40, INKPLATE2_BLACK);
+	const int gap = 2;
+	const int innerRectWidth = 40;
+	const int innerRectHeight = 36;
+	int xPos = 77;
+	const int yPos = 47;
+	const int numForecasts = 3; // Number of forecast blocks
+								// Start at index 1 to get the next forecast (not the one for right now)
+	for (int i = 1; i <= numForecasts; i++) {
+		float temp = doc["list"][i]["main"]["temp"];
+		const char* description = doc["list"][i]["weather"][0]["main"];
+		int xCursor = xPos + gap;
+		int yCursor = yPos + gap;
+
+		display.fillRect(xPos, yPos, innerRectWidth, innerRectHeight, INKPLATE2_WHITE);
+
+		// Temperature
+		display.setCursor(xCursor, yCursor);
+		display.println(temp, 1);
+		display.setCursor(xCursor + 20, yCursor + 7);
+		display.setFont(&WeatherIcon); // Change to weather icon font
+		display.print((char)WeatherChar::CELSIUS);
+
+		// Weather Image description
+		yCursor += 30;
+		display.setCursor(xCursor, yCursor);
+		display.write( getWeatherChar(description) );
+
+		// Interval
+		xCursor += 20;
+		display.setCursor(xCursor, yCursor);
+		display.setFont(nullptr); // Return to normal font (use nullptr instead of null)
+		display.println("+" + String(i*3) + "h");
+
+		xPos += gap;
+		xPos += innerRectWidth;
+	}
+
+	display.display();
 }
