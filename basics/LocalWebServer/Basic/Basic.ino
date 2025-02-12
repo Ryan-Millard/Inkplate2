@@ -15,23 +15,26 @@ WiFiServer server(80);
 
 Inkplate display;
 
-void setup() {
+void setup()
+{
+	Serial.begin(115200);
+	Serial.println("Setting things up...");
+
 	display.begin();
 	display.clearDisplay();
+	display.setTextColor(INKPLATE2_BLACK);
 	display.println("Setting things up...");
 	display.display();
-
-	Serial.begin(115200);
 
 	// Set up the ESP32 as an Access Point with the custom IP
 	WiFi.softAPConfig(local_ip, gateway, subnet);
 	WiFi.softAP(SSID, PASSWORD);
 
-	String ipAddress = WiFi.softAPIP();
-	String accessPointInfo = "Access Point \"" + SSID + "\" started";
+	String ipAddress = WiFi.softAPIP().toString();
+	String accessPointInfo = "Access Point \"" + String(SSID) + "\" started";
 	String ipAddressInfo = "IP address: " + ipAddress;
-	String howToConnectInfo = "Find \"" + SSID + "\" in the list of available networks under WiFi and type \""
-				+ PASSWORD + "\" as your password to connect to it. Next, open your browser and type \""
+	String howToConnectInfo = "Find \"" + String(SSID) + "\" in the list of available WiFi networks under and type \""
+				+ PASSWORD + "\" as the password to connect to it. Next, open your browser and type \""
 				+ ipAddress + "\" in the search bar to open the website.";
 
 	Serial.println(accessPointInfo);
@@ -48,7 +51,8 @@ void setup() {
 	server.begin();
 }
 
-void loop() {
+void loop()
+{
 	WiFiClient client = server.available();
 	if (client)
 	{
@@ -67,6 +71,7 @@ void loop() {
 
 		String html = "<!DOCTYPE html><html><body>"; // start of HTML doc
 		display.clearDisplay();
+		display.setCursor(0,0);
 		display.setTextSize(2);
 		// Improved routing logic
 		if(path == "/" || path == "")
@@ -109,9 +114,6 @@ void loop() {
 			display.println("404 Not Found Page");
 		}
 		html += "</body></html>"; // end of HTML doc
-		display.setTextSize(1);
-		display.println(html);
-		display.display();
 
 		// Send the HTML page to the client
 		client.println("HTTP/1.1 200 OK");
@@ -119,8 +121,13 @@ void loop() {
 		client.println("Connection: close");
 		client.println();
 		client.println(html);
-
 		client.stop();
+
 		Serial.println("Client disconnected");
+
+		// Prevent response to client from being blocked by renders by rendering to screen now
+		display.setTextSize(1);
+		display.println(html);
+		display.display();
 	}
 }
