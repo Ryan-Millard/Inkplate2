@@ -5,6 +5,12 @@
 const char* SSID = "ESP32_AP";
 const char* PASSWORD = "123456789";
 
+// Set custom IP, Gateway, and Subnet mask
+// Now the site can be accessed from 10.0.0.1 instead
+IPAddress local_ip(10, 0, 0, 1);
+IPAddress gateway(10, 0, 0, 1);
+IPAddress subnet(255, 255, 255, 0);
+
 // Web server on port 80
 WebServer server(80);
 
