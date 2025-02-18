@@ -7,21 +7,21 @@ namespace WeatherUtils
 {
 	bool fetchWeatherData(const String& city, const String& countryCode, DynamicJsonDocument& doc)
 	{
-		HTTPClient http;
-		String url{"https://api.openweathermap.org/data/2.5/forecast?q=" + city + ","
-				+ countryCode + "&APPID=" + env::OPEN_WEATHER_MAP_API_KEY + "&units=metric"};
+		HTTPClient http{};
+		const String url{"https://api.openweathermap.org/data/2.5/forecast?q=" + city + "," + countryCode + "&APPID=" + env::OPEN_WEATHER_MAP_API_KEY + "&units=metric"};
 		http.begin(url);
 
 		int httpCode{http.GET()};
-		if(httpCode > 0)
+		Serial.println("HTTP Code: " + String(httpCode));
+		if(httpCode <= 0)
 		{
-			String payload{http.getString()};
-			DeserializationError error{deserializeJson(doc, payload)};
 			http.end();
-			return !error;
+			return false;
 		}
 
+		String payload{http.getString()};
+		DeserializationError error{deserializeJson(doc, payload)};
 		http.end();
-		return false;
+		return !error;
 	}
 }

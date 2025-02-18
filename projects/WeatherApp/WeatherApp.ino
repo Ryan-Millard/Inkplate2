@@ -2,6 +2,7 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <Inkplate.h>
+
 #include "env.h"
 #include "wifi_utils.h"
 #include "display_utils.h"
@@ -35,6 +36,8 @@ void setup()
 	String city, countryCode;
 	if(LocationUtils::fetchLocationData(city, countryCode))
 	{
+		Serial.println("City: " + city);
+		Serial.println("Country Code: " + countryCode);
 		Serial.println("Displaying location...");
 		DisplayUtils::displayLocation(city, countryCode);
 	}
