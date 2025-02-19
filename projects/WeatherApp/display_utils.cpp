@@ -31,7 +31,11 @@ namespace DisplayUtils
 			delay(5000);
 			ESP.restart();
 		}
+
 		Serial.println("Display initialized successfully");
+		display.setTextColor(INKPLATE2_BLACK);
+		display.clearDisplay();
+		display.display();
 	}
 
 	void displayLocation(const String& city, const String& countryCode)
@@ -62,7 +66,6 @@ namespace DisplayUtils
 		{
 			// Current Date
 			display.setCursor(12, 5);
-			display.setTextColor(INKPLATE2_BLACK);
 			char dateString[9];
 			strftime(dateString, 9, "%Y %B %d", &timeinfo);
 			display.print(String(dateString));
