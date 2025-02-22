@@ -123,7 +123,7 @@ namespace DisplayUtils
 		{
 			uint8_t i{numDailyForecasts * (count + 1)}; // 8, 16, 24 for 3 days
 
-			const char* dt_txt = doc["list"][0]["dt_txt"];
+			const char* dt_txt = doc["list"][i]["dt_txt"];
 			const char day[3] = {dt_txt[8], dt_txt[9], '\0'}; // "22"
 			const char month[3] = {dt_txt[5], dt_txt[6], '\0'}; // "02"
 			char formatted_date[6]; // DD/MM + null terminator
