@@ -10,7 +10,7 @@ namespace WiFiUtils
 	extern const char *AP_SSID; // Name of AP
 	extern const char *AP_PASSWORD; // Password to connect to it (set to null if no password is wanted)
 
-	std::tuple<const char*, const char*> capture_wifi_credentials();
+	std::tuple<const char*, const char*> captureWifiCredentials();
 	void handleSubmit();
 	void handleRoot();
 

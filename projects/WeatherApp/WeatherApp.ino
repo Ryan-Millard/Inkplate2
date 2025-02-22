@@ -37,7 +37,7 @@ void setup()
 	Enter your WiFi's password.)");
 	DisplayUtils::display.display();
 	Serial.println("Server starting...");
-	auto [WIFI_SSID, WIFI_PASSWORD] = WiFiUtils::capture_wifi_credentials();
+	auto [WIFI_SSID, WIFI_PASSWORD] = WiFiUtils::captureWifiCredentials();
 
 	if(!WiFiUtils::connectToWiFi("D-Link-2.4G", "51543BED9AD4344C156A"))
 	{
