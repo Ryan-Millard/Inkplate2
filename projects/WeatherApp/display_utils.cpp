@@ -66,8 +66,8 @@ namespace DisplayUtils
 		{
 			// Current Date
 			display.setCursor(12, 5);
-			char dateString[9];
-			strftime(dateString, 9, "%Y %B %d", &timeinfo);
+			char dateString[20];
+			strftime(dateString, sizeof(dateString), "%d %B %Y", &timeinfo);
 			display.print(String(dateString));
 
 			// Current time
@@ -133,17 +133,17 @@ namespace DisplayUtils
 			display.println(temp, 1);
 			display.setCursor(xCursor + 20, yCursor + 7);
 			display.setFont(&WeatherIcon);
-			display.print((char)WeatherChar::CELSIUS);
+			display.print((char)WeatherChar::CELSIUS); // Use weather font
 
 			// Weather Image description
 			yCursor += 30;
 			display.setCursor(xCursor, yCursor);
 			display.write(getWeatherChar(description));
+			display.setFont(nullptr); // Reset the font
 
 			// Interval
 			xCursor += 20;
 			display.setCursor(xCursor, yCursor);
-			display.setFont(nullptr);
 			display.println("+" + String(i * 3) + "h");
 
 			xPos += gap;
