@@ -23,23 +23,23 @@ void setup()
 
 	DisplayUtils::initializeDisplay();
 
-	/* DisplayUtils::display.clearDisplay(); */
-	/* DisplayUtils::display.setTextSize(2); */
-	/* DisplayUtils::display.println("Connect to WiFi:"); */
-	/* DisplayUtils::display.setTextSize(1); */
-	/* DisplayUtils::display.println("Name: " + String(WiFiUtils::AP_SSID)); */
-	/* DisplayUtils::display.println("Password: " + String(WiFiUtils::AP_PASSWORD)); */
-	/* DisplayUtils::display.setTextSize(2); */
-	/* DisplayUtils::display.println("\nEnter WiFi Info"); */
-	/* DisplayUtils::display.setTextSize(1); */
-	/* DisplayUtils::display.println(R"(	Search 192.168.4.1 in your browser */
-	/* Enter the name of your WiFi. */
-	/* Enter your WiFi's password.)"); */
-	/* DisplayUtils::display.display(); */
-	/* Serial.println("Server starting..."); */
-	/* auto [WIFI_SSID, WIFI_PASSWORD] = WiFiUtils::captureWifiCredentials(); */
+	DisplayUtils::display.clearDisplay();
+	DisplayUtils::display.setTextSize(2);
+	DisplayUtils::display.println("Connect to WiFi:");
+	DisplayUtils::display.setTextSize(1);
+	DisplayUtils::display.println("Name: " + String(WiFiUtils::AP_SSID));
+	DisplayUtils::display.println("Password: " + String(WiFiUtils::AP_PASSWORD));
+	DisplayUtils::display.setTextSize(2);
+	DisplayUtils::display.println("\nEnter WiFi Info");
+	DisplayUtils::display.setTextSize(1);
+	DisplayUtils::display.println(R"(	Search 192.168.4.1 in your browser
+	Enter the name of your WiFi.
+	Enter your WiFi's password.)");
+	DisplayUtils::display.display();
+	Serial.println("Server starting...");
+	auto [WIFI_SSID, WIFI_PASSWORD] = WiFiUtils::captureWifiCredentials();
 
-	if(!WiFiUtils::connectToWiFi("D-Link-2.4G", "51543BED9AD4344C156A"))
+	if(!WiFiUtils::connectToWiFi(WIFI_SSID, WIFI_PASSWORD))
 	{
 		DisplayUtils::display.clearDisplay();
 		DisplayUtils::display.setCursor(10, 10);
@@ -54,8 +54,8 @@ void setup()
 	{
 		Serial.println("City: " + city);
 		Serial.println("Country Code: " + countryCode);
-		/* Serial.println("Displaying location..."); */
-		/* DisplayUtils::displayLocation(city, countryCode); */
+		Serial.println("Displaying location...");
+		DisplayUtils::displayLocation(city, countryCode);
 	}
 
 	Serial.println("Configuring Time...");
