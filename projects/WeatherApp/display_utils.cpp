@@ -98,28 +98,37 @@ namespace DisplayUtils
 		display.setFont(nullptr);
 
 		// Humidity
-		display.setTextSize(1);
-		display.setCursor(5, 89);
-		display.print("Humidity: ");
+		display.setTextSize(1.2);
+		display.setCursor(5, 90);
 		display.print(humidity, 0);
 		display.print("%");
 
 		// Wind Speed
-		display.setCursor(90, 89);
-		display.print("Wind Speed: ");
+		display.setCursor(30, 90);
 		display.print(windSpeed, 1);
-		display.print(" m/s");
+		display.print("m/s");
+		display.setTextSize(1); // Reset text size
 
-		// Next forecasts for the rest of the day
-		display.fillRect(75, 45, 128, 40, INKPLATE2_BLACK);
+		// Forecasts for next 3 days
+		display.fillRect(75, 45, 128, 55, INKPLATE2_BLACK);
 		const uint8_t gap{2};
 		const uint8_t innerRectWidth{40};
-		const uint8_t innerRectHeight{36};
+		const uint8_t innerRectHeight{51};
 		uint8_t xPos{77};
 		const uint8_t yPos{47};
-		const uint8_t numForecasts{3};
+		const uint8_t numForecastsToDisplay{3};
+		const uint8_t numDailyForecasts{8}; // 24 Hours with a forecast every 3 hours -> 24 / 3 = 8
 
-		for(uint8_t i{1}; i <= numForecasts; i++) {
+		for(uint8_t count = 0; count < numForecastsToDisplay; count++)
+		{
+			uint8_t i{numDailyForecasts * (count + 1)}; // 8, 16, 24 for 3 days
+
+			const char* dt_txt = doc["list"][0]["dt_txt"];
+			const char day[3] = {dt_txt[8], dt_txt[9], '\0'}; // "22"
+			const char month[3] = {dt_txt[5], dt_txt[6], '\0'}; // "02"
+			char formatted_date[6]; // DD/MM + null terminator
+			sprintf(formatted_date, "%s/%s", day, month);
+
 			const float temp{doc["list"][i]["main"]["temp"]};
 			const char* description{doc["list"][i]["weather"][0]["main"]};
 
@@ -128,23 +137,26 @@ namespace DisplayUtils
 
 			display.fillRect(xPos, yPos, innerRectWidth, innerRectHeight, INKPLATE2_WHITE);
 
-			// Temperature
-			display.setCursor(xCursor, yCursor);
-			display.println(temp, 1);
-			display.setCursor(xCursor + 20, yCursor + 7);
-			display.setFont(&WeatherIcon);
-			display.print((char)WeatherChar::CELSIUS); // Use weather font
+			// Date
+			display.setCursor(xCursor + 3, yCursor);
+			display.setTextSize(1);
+			display.println(formatted_date);
 
 			// Weather Image description
-			yCursor += 30;
-			display.setCursor(xCursor, yCursor);
+			yCursor += 27;
+			display.setCursor(xCursor + 7, yCursor);
+			display.setFont(&WeatherIcon);
 			display.write(getWeatherChar(description));
 			display.setFont(nullptr); // Reset the font
 
-			// Interval
-			xCursor += 20;
-			display.setCursor(xCursor, yCursor);
-			display.println("+" + String(i * 3) + "h");
+			// Temperature
+			yCursor += 10;
+			display.setCursor(xCursor + 1, yCursor);
+			display.println(temp, 1);
+			display.setCursor(xCursor + 20, yCursor + 7);
+			display.setFont(&WeatherIcon);
+			display.print((char)WeatherChar::CELSIUS); // Use weather font for celsius symbol
+			display.setFont(nullptr); // Reset the font
 
 			xPos += gap;
 			xPos += innerRectWidth;
