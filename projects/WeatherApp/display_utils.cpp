@@ -51,10 +51,20 @@ namespace DisplayUtils
 
 	void displayWeather(const DynamicJsonDocument& doc)
 	{
-		float temp{doc["list"][0]["main"]["temp"]};
-		float humidity{doc["list"][0]["main"]["humidity"]};
+		const float humidity{doc["list"][0]["main"]["humidity"]};
 		const char* description{doc["list"][0]["weather"][0]["main"]};
-		float windSpeed{doc["list"][0]["wind"]["speed"]};
+		const float windSpeed{doc["list"][0]["wind"]["speed"]};
+
+		float minTemp{doc["list"][0]["main"]["temp_min"]};
+		float maxTemp{doc["list"][0]["main"]["temp_max"]};
+		for(int i = 1; i < 8; ++i)
+		{
+			const float newMinTemp{doc["list"][i]["main"]["temp_min"]};
+			const float newMaxTemp{doc["list"][i]["main"]["temp_max"]};
+
+			minTemp = (minTemp < newMinTemp) ? minTemp : newMinTemp;
+			maxTemp = (maxTemp > newMaxTemp) ? maxTemp : newMaxTemp;
+		}
 
 		display.clearDisplay();
 		display.drawRect(0, 0, display.width(), display.height(), INKPLATE2_BLACK);
@@ -89,10 +99,12 @@ namespace DisplayUtils
 		}
 
 		// Temperature
-		display.setTextSize(3);
-		display.setCursor(105, 20);
-		display.print(temp, 1);
-		display.setCursor(160, 56);
+		display.setTextSize(2);
+		display.setCursor(75, 25);
+		display.print(minTemp, 1);
+		display.print('/');
+		display.print(maxTemp, 1);
+		display.setCursor(172, 46);
 		display.setFont(&WeatherIcon);
 		display.print((char)WeatherChar::CELSIUS);
 		display.setFont(nullptr);
