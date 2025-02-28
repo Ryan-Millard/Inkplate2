@@ -2,6 +2,7 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <Inkplate.h>
+#include <LITTLEFS.h>
 
 #include "wifi_utils.h"
 #include "display_utils.h"
@@ -68,7 +69,7 @@ void setup()
 		DisplayUtils::displayWeather(weatherDoc);
 	}
 
-	Serial.println("Going to sleep...");
+	Serial.println("Going to sleep for " + String(SLEEP_TIME / 3600) + " hours...");
 	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000);
 	esp_deep_sleep_start();
 }
