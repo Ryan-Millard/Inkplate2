@@ -2,7 +2,6 @@
 #include <ArduinoJson.h>
 
 #include "location_utils.h"
-#include "env.h"
 
 namespace LocationUtils
 {

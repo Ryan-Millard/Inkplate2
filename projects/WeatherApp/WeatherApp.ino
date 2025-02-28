@@ -3,7 +3,6 @@
 #include <ArduinoJson.h>
 #include <Inkplate.h>
 
-#include "env.h"
 #include "wifi_utils.h"
 #include "display_utils.h"
 #include "weather_utils.h"
@@ -39,7 +38,7 @@ void setup()
 	Serial.println("Server starting...");
 	auto [WIFI_SSID, WIFI_PASSWORD] = WiFiUtils::captureWifiCredentials();
 
-	if(!WiFiUtils::connectToWiFi("D-Link-2.4G", "51543BED9AD4344C156A"))
+	if(!WiFiUtils::connectToWiFi(WIFI_SSID.c_str(), WIFI_PASSWORD.c_str()))
 	{
 		DisplayUtils::display.clearDisplay();
 		DisplayUtils::display.setCursor(10, 10);
