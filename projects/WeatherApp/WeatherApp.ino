@@ -1,8 +1,6 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <ArduinoJson.h>
 #include <Inkplate.h>
-#include <LITTLEFS.h>
 
 #include "wifi_utils.h"
 #include "display_utils.h"
@@ -12,7 +10,7 @@
 // NTP Server settings
 constexpr char* NTP_SERVER{"pool.ntp.org"};
 constexpr long GMT_OFFSET_SEC{7200};  // GMT+2 for Johannesburg
-constexpr int DAYLIGHT_OFFSET_SEC{0};
+constexpr int DAYLIGHT_OFFSET_SEC{0}; // No daylight saving in Johannesburg
 
 // Sleep timer settings
 constexpr unsigned int SLEEP_TIME{3 * 60 * 60}; // Time to sleep for 3 hours (in seconds)
