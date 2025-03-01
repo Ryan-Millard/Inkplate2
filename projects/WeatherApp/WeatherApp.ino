@@ -2,8 +2,8 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <Inkplate.h>
+#include <LITTLEFS.h>
 
-#include "env.h"
 #include "wifi_utils.h"
 #include "display_utils.h"
 #include "weather_utils.h"
@@ -39,7 +39,7 @@ void setup()
 	Serial.println("Server starting...");
 	auto [WIFI_SSID, WIFI_PASSWORD] = WiFiUtils::captureWifiCredentials();
 
-	if(!WiFiUtils::connectToWiFi("D-Link-2.4G", "51543BED9AD4344C156A"))
+	if(!WiFiUtils::connectToWiFi(WIFI_SSID.c_str(), WIFI_PASSWORD.c_str()))
 	{
 		DisplayUtils::display.clearDisplay();
 		DisplayUtils::display.setCursor(10, 10);
@@ -69,7 +69,7 @@ void setup()
 		DisplayUtils::displayWeather(weatherDoc);
 	}
 
-	Serial.println("Going to sleep...");
+	Serial.println("Going to sleep for " + String(SLEEP_TIME / 3600) + " hours...");
 	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000);
 	esp_deep_sleep_start();
 }
