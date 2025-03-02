@@ -40,9 +40,16 @@ bool retryOperation(Func operation, const String& initialMessage, const String& 
 		}
 
 		const int maxDelayMs{10000}; // Maximum delay of 10 seconds
-		delay(min(delayMs * (1 << i), maxDelayMs); // Exponential backoff capped at 10 seconds
+		delay(min(delayMs * (1 << i), maxDelayMs)); // Exponential backoff capped at 10 seconds
 	}
 	return false; // All attempts failed
+}
+
+void sleep()
+{
+	Serial.println("Going to sleep for " + String(SLEEP_TIME / 3600) + " hours...");
+	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000);
+	esp_deep_sleep_start();
 }
 
 void setup()
@@ -60,13 +67,10 @@ void setup()
 		[&]() { return WiFiUtils::connectToWiFi(WIFI_SSID.c_str(), WIFI_PASSWORD.c_str()); },
 		"Failed to connect to WiFi",
 		"Trying again, please stand by.",
-		"Failed to connect to WiFi\nPlease try again later.",
+		"Failed to connect to WiFi\nPlease try again later. The device is going to sleep. It will retry later.",
 		20
 	)};
-	if(!wifiConnected)
-	{
-		return;
-	}
+	if(!wifiConnected) { sleep(); }
 
 	Serial.println("Fetching location...");
 	String city, countryCode;
@@ -74,14 +78,10 @@ void setup()
 		[&]() { return LocationUtils::fetchLocationData(city, countryCode); },
 		"Failed to fetch\nlocation.",
 		"Trying again, please stand by.",
-		"Failed to fetch\nlocation.\nPlease try again later.",
+		"Failed to fetch\nlocation.\nPlease try again later. The device is going to sleep. It will retry later.",
 		20
 	)};
-	if(!locationFetched)
-	{
-		// Handle location fetch failure
-		return;
-	}
+	if(!locationFetched) { sleep(); }
 	Serial.println("City: " + city);
 	Serial.println("Country Code: " + countryCode);
 	Serial.println("Displaying location...");
@@ -96,19 +96,14 @@ void setup()
 		[&]() { return WeatherUtils::fetchWeatherData(city, countryCode, weatherDoc); },
 		"Failed to fetch\nweather forecasts",
 		"Trying again, please stand by.",
-		"Failed to fetch\nweather forecasts\nPlease try again later.",
+		"Failed to fetch\nweather forecasts\nPlease try again later. The device is going to sleep. It will retry later.",
 		20
 	)};
-	if(!weatherFetched) {
-		// Handle weather fetch failure
-		return;
-	}
+	if(!weatherFetched) { sleep(); }
 	Serial.println("Displaying Weather Data...");
 	DisplayUtils::displayWeather(weatherDoc);
 
-	Serial.println("Going to sleep for " + String(SLEEP_TIME / 3600) + " hours...");
-	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000);
-	esp_deep_sleep_start();
+	sleep();
 }
 
 void loop() {}
