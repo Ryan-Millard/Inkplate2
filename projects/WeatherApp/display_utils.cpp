@@ -41,6 +41,7 @@ namespace DisplayUtils
 	void displayWiFiConnectionGuide(const char* AP_SSID, const char* AP_PASSWORD)
 	{
 		display.clearDisplay();
+		display.setCursor(0, 0);
 		display.setTextSize(2);
 		display.println("Connect to WiFi:");
 		display.setTextSize(1);
