@@ -16,6 +16,11 @@ namespace WiFiUtils
 		WebServer server(80);
 		bool serverStopped{false};
 
+		WiFi.disconnect(true); // Force disconnect any existing connections
+		WiFi.enableSTA(false); // Explicitly disable STA
+		WiFi.mode(WIFI_OFF);   // Ensure WiFi is off before starting AP
+		delay(500);
+
 		WiFi.softAP(AP_SSID, AP_PASSWORD);
 		Serial.println("Access point started");
 
@@ -25,16 +30,21 @@ namespace WiFiUtils
 
 		server.on("/submit", HTTP_POST, [&]() {
 			if(server.hasArg("wifi_ssid") && server.hasArg("wifi_password")) {
-			wifi_ssid = server.arg("wifi_ssid");
-			wifi_password = server.arg("wifi_password");
+				wifi_ssid = server.arg("wifi_ssid");
+				wifi_password = server.arg("wifi_password");
 
-			server.send(200, "text/html", HTML::success);
-			delay(1000);
-			server.stop();
-			WiFi.softAPdisconnect(true);
-			serverStopped = true;
-			} else {
-			server.send(400, "text/html", "Invalid Input");
+				server.send(200, "text/html", HTML::success);
+				delay(1000);
+				server.stop();
+				WiFi.softAPdisconnect(true);
+				WiFi.enableAP(false); // Explicitly disable AP
+				WiFi.mode(WIFI_OFF);
+				delay(500); // Critical: Allow time for cleanup
+				serverStopped = true;
+			}
+			else
+			{
+				server.send(400, "text/html", "Invalid Input");
 			}
 		});
 
@@ -54,8 +64,15 @@ namespace WiFiUtils
 	bool connectToWiFi(const char* WIFI_SSID, const char* WIFI_PASSWORD)
 	{
 		Serial.printf("Connecting to WiFi network: %s\n", WIFI_SSID);
-		WiFi.mode(WIFI_STA); // Ensure ESP32 is in station mode
-		WiFi.disconnect(true); // Clears previous Wi-Fi credentials
+		WiFi.persistent(false); // Prevent saving settings to flash
+		WiFi.disconnect(true);  // Clear previous configs
+		WiFi.mode(WIFI_OFF);    // Ensure WiFi is off before setting mode
+		delay(100);
+
+		WiFi.mode(WIFI_STA);    // Set to station mode
+		WiFi.disconnect(true);   // Clear previous configurations
+		delay(100);
+
 		WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
 		for(uint8_t connectionAttempts{0}; WiFi.status() != WL_CONNECTED && connectionAttempts < 20; ++connectionAttempts)

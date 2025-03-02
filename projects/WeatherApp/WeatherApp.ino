@@ -28,7 +28,7 @@ void setup()
 	DisplayUtils::display.println("Name: " + String(WiFiUtils::AP_SSID));
 	DisplayUtils::display.println("Password: " + String(WiFiUtils::AP_PASSWORD));
 	DisplayUtils::display.setTextSize(2);
-	DisplayUtils::display.println("\nEnter WiFi Info");
+	DisplayUtils::display.println("\nEnter WiFi Info:");
 	DisplayUtils::display.setTextSize(1);
 	DisplayUtils::display.println(R"(	Search 192.168.4.1 in your browser
 	Enter the name of your WiFi.
@@ -61,11 +61,13 @@ void setup()
 
 	Serial.println("Fetching Weather Data...");
 	DynamicJsonDocument weatherDoc(1024);
-	if(WeatherUtils::fetchWeatherData(city, countryCode, weatherDoc))
+	for(byte i = 0; !WeatherUtils::fetchWeatherData(city, countryCode, weatherDoc) && i < 20; i++)
 	{
-		Serial.println("Displaying Weather Data...");
-		DisplayUtils::displayWeather(weatherDoc);
+		Serial.println("fetchWeatherData attempt: " + String(i));
 	}
+
+	Serial.println("Displaying Weather Data...");
+	DisplayUtils::displayWeather(weatherDoc);
 
 	Serial.println("Going to sleep for " + String(SLEEP_TIME / 3600) + " hours...");
 	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000);
