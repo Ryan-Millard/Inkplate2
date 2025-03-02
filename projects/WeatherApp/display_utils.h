@@ -23,6 +23,7 @@ namespace DisplayUtils
 
 	char getWeatherChar(const char* description);
 	void initializeDisplay();
+	void displayWiFiConnectionGuide(const char* AP_SSID, const char* AP_PASSWORD);
 	void displayLocation(const String& city, const String& countryCode);
 	void displayWeather(const DynamicJsonDocument& doc);
 }
