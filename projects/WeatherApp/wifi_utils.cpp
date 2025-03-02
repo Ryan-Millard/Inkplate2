@@ -23,8 +23,6 @@ namespace WiFiUtils
 
 		if(WIFI_SSID.isEmpty() || WIFI_PASSWORD.isEmpty())
 		{
-			DisplayUtils::displayWiFiConnectionGuide(WiFiUtils::AP_SSID, WiFiUtils::AP_PASSWORD);
-
 			Serial.println("Server starting...");
 			auto credentials = captureWifiCredentials(); // Ensure this returns valid credentials
 			WIFI_SSID = std::get<0>(credentials);
@@ -40,6 +38,8 @@ namespace WiFiUtils
 
 	std::tuple<const String, const String> captureWifiCredentials()
 	{
+		DisplayUtils::displayWiFiConnectionGuide(WiFiUtils::AP_SSID, WiFiUtils::AP_PASSWORD);
+
 		prefs.begin("wifi_utils");
 
 		String wifi_ssid{};
