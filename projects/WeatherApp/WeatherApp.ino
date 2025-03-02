@@ -18,7 +18,7 @@ constexpr unsigned int SLEEP_TIME{3 * 60 * 60}; // Time to sleep for 3 hours (in
 void sleep()
 {
 	Serial.println("Going to sleep for " + String(SLEEP_TIME / 3600) + " hours...");
-	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000);
+	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000ULL);
 	esp_deep_sleep_start();
 }
 
