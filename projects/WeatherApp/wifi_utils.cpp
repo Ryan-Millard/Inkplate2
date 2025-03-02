@@ -1,14 +1,41 @@
 #include <WiFi.h>
 #include <stdint.h>
 #include <WebServer.h>
+#include <Preferences.h>
 
 #include "wifi_utils.h"
 #include "HTML.h"
+#include "display_utils.h"
 
 namespace WiFiUtils
 {
 	const char *AP_SSID{"ESP32-AccessPoint"};
 	const char *AP_PASSWORD{"123456789"}; // Make it null if you don't want a password
+
+	std::tuple<const String, const String> getWiFiCredentials()
+	{
+		Preferences prefs;
+		prefs.begin("wifi_utils");
+
+		String WIFI_SSID = prefs.getString("wifi_ssid", "");
+		String WIFI_PASSWORD = prefs.getString("wifi_password", "");
+
+		if(WIFI_SSID.isEmpty() || WIFI_PASSWORD.isEmpty())
+		{
+			DisplayUtils::displayWiFiConnectionGuide(WiFiUtils::AP_SSID, WiFiUtils::AP_PASSWORD);
+
+			Serial.println("Server starting...");
+			auto credentials = captureWifiCredentials(); // Ensure this returns valid credentials
+			WIFI_SSID = std::get<0>(credentials);
+			WIFI_PASSWORD = std::get<1>(credentials);
+
+			prefs.putString("wifi_ssid", WIFI_SSID);
+			prefs.putString("wifi_password", WIFI_PASSWORD);
+		}
+
+		prefs.end();
+		return std::make_tuple(std::move(WIFI_SSID), std::move(WIFI_PASSWORD));
+	}
 
 	std::tuple<const String, const String> captureWifiCredentials() {
 		String wifi_ssid{};

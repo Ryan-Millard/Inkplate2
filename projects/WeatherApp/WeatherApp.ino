@@ -15,6 +15,13 @@ constexpr int DAYLIGHT_OFFSET_SEC{0}; // No daylight saving in Johannesburg
 // Sleep timer settings
 constexpr unsigned int SLEEP_TIME{3 * 60 * 60}; // Time to sleep for 3 hours (in seconds)
 
+void sleep()
+{
+	Serial.println("Going to sleep for " + String(SLEEP_TIME / 3600) + " hours...");
+	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000);
+	esp_deep_sleep_start();
+}
+
 template<typename Func>
 bool retryOperation(Func operation, const String& initialMessage, const String& retryMessage, const String& finalFailureMessage, int maxAttempts = 20, int delayMs = 500)
 {
@@ -45,24 +52,14 @@ bool retryOperation(Func operation, const String& initialMessage, const String& 
 	return false; // All attempts failed
 }
 
-void sleep()
-{
-	Serial.println("Going to sleep for " + String(SLEEP_TIME / 3600) + " hours...");
-	esp_sleep_enable_timer_wakeup(SLEEP_TIME * 1000000);
-	esp_deep_sleep_start();
-}
-
 void setup()
 {
 	Serial.begin(115200);
 
 	DisplayUtils::initializeDisplay();
 
-	DisplayUtils::displayWiFiConnectionGuide(WiFiUtils::AP_SSID, WiFiUtils::AP_PASSWORD);
-
 	Serial.println("Server starting...");
-	auto [WIFI_SSID, WIFI_PASSWORD] = WiFiUtils::captureWifiCredentials();
-
+	auto [WIFI_SSID, WIFI_PASSWORD] = WiFiUtils::getWiFiCredentials();
 	const bool wifiConnected{retryOperation(
 		[&]() { return WiFiUtils::connectToWiFi(WIFI_SSID.c_str(), WIFI_PASSWORD.c_str()); },
 		"Failed to connect to WiFi",
