@@ -55,15 +55,15 @@ namespace DisplayUtils
 		display.display();
 	}
 
-	void displayLocation(const String& city, const String& countryCode)
+	void displayMessage(const String& heading, const String& text)
 	{
 		display.clearDisplay();
-		display.setCursor(10, 10);
-		display.println("Location found:");
-		display.setCursor(10, 40);
-		display.println(city + ", " + countryCode);
+		display.setCursor(0, 0);
+		display.setTextSize(2);
+		display.println(heading);
+		display.setTextSize(1);
+		display.println(text);
 		display.display();
-		delay(2000);
 	}
 
 	void displayWeather(const DynamicJsonDocument& doc)

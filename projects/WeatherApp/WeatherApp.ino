@@ -28,10 +28,7 @@ void setup()
 
 	if(!WiFiUtils::connectToWiFi(WIFI_SSID.c_str(), WIFI_PASSWORD.c_str()))
 	{
-		DisplayUtils::display.clearDisplay();
-		DisplayUtils::display.setCursor(10, 10);
-		DisplayUtils::display.println("WiFi Connection Failed!");
-		DisplayUtils::display.display();
+		DisplayUtils::displayMessage("WiFi Connection Failed!");
 		return;
 	}
 
@@ -42,7 +39,7 @@ void setup()
 		Serial.println("City: " + city);
 		Serial.println("Country Code: " + countryCode);
 		Serial.println("Displaying location...");
-		DisplayUtils::displayLocation(city, countryCode);
+		DisplayUtils::displayMessage("Location found:", city + ", " + countryCode);
 	}
 
 	Serial.println("Configuring Time...");
