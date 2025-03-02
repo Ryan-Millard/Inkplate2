@@ -12,9 +12,10 @@ namespace WiFiUtils
 	const char *AP_SSID{"ESP32-AccessPoint"};
 	const char *AP_PASSWORD{"123456789"}; // Make it null if you don't want a password
 
+	Preferences prefs;
+
 	std::tuple<const String, const String> getWiFiCredentials()
 	{
-		Preferences prefs;
 		prefs.begin("wifi_utils");
 
 		String WIFI_SSID = prefs.getString("wifi_ssid", "");
@@ -37,7 +38,10 @@ namespace WiFiUtils
 		return std::make_tuple(std::move(WIFI_SSID), std::move(WIFI_PASSWORD));
 	}
 
-	std::tuple<const String, const String> captureWifiCredentials() {
+	std::tuple<const String, const String> captureWifiCredentials()
+	{
+		prefs.begin("wifi_utils");
+
 		String wifi_ssid{};
 		String wifi_password{};
 		WebServer server(80);
@@ -83,6 +87,10 @@ namespace WiFiUtils
 
 		Serial.println("WiFi SSID inside captureWifiCredentials: " + wifi_ssid);
 		Serial.println("WiFi Password inside captureWifiCredentials: " + wifi_password);
+
+		prefs.putString("wifi_ssid", wifi_ssid);
+		prefs.putString("wifi_password", wifi_password);
+		prefs.end();
 
 		// Return as a String tuple
 		return std::make_tuple(wifi_ssid, wifi_password);
