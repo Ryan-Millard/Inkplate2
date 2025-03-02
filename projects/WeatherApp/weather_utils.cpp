@@ -21,6 +21,9 @@ namespace WeatherUtils
 
 		String payload{http.getString()};
 		DeserializationError error{deserializeJson(doc, payload)};
+		if(error) {
+			Serial.println("Error during HTTP payload deserialization.");
+		}
 		http.end();
 		return !error;
 	}

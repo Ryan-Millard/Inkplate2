@@ -38,15 +38,32 @@ namespace DisplayUtils
 		display.display();
 	}
 
-	void displayLocation(const String& city, const String& countryCode)
+	void displayWiFiConnectionGuide(const char* AP_SSID, const char* AP_PASSWORD)
 	{
 		display.clearDisplay();
-		display.setCursor(10, 10);
-		display.println("Location found:");
-		display.setCursor(10, 40);
-		display.println(city + ", " + countryCode);
+		display.setTextSize(2);
+		display.println("Connect to WiFi:");
+		display.setTextSize(1);
+		display.println("Name: " + String(AP_SSID));
+		display.println("Password: " + String(AP_PASSWORD));
+		display.setTextSize(2);
+		display.println("\nEnter WiFi Info:");
+		display.setTextSize(1);
+		display.println(R"(	Search 192.168.4.1 in your browser
+	Enter the name of your WiFi.
+	Enter your WiFi's password.)");
 		display.display();
-		delay(2000);
+	}
+
+	void displayMessage(const String& heading, const String& text)
+	{
+		display.clearDisplay();
+		display.setCursor(0, 0);
+		display.setTextSize(2);
+		display.println(heading);
+		display.setTextSize(1);
+		display.println(text);
+		display.display();
 	}
 
 	void displayWeather(const DynamicJsonDocument& doc)
