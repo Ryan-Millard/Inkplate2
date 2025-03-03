@@ -10,7 +10,7 @@
 namespace WiFiUtils
 {
 	const char *AP_SSID{"ESP32-AccessPoint"};
-	const char *AP_PASSWORD{"123456789"}; // Make it null if you don't want a password
+	const char *AP_PASSWORD{""}; // No password
 
 	Preferences prefs;
 
