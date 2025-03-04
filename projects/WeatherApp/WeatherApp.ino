@@ -1,3 +1,5 @@
+// Note that the Inkplate2 will need to be close to your WiFi router as it's effective range is less than that of common devices
+
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <Inkplate.h>
