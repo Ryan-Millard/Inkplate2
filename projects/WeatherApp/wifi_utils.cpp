@@ -56,15 +56,23 @@ namespace WiFiUtils
 		Serial.println("Access point started");
 
 		server.on("/", HTTP_GET, [&server]() {
-			server.send(200, "text/html", HTML::index);
+			server.send(200, "text/html; charset=utf-8", HTML::index);
 		});
 
 		server.on("/submit", HTTP_POST, [&]() {
+			String responseHTML = HTML::SSRNotice;
+			size_t textContentPos = successHtml.find("<!-- textContent -->");
+
 			if(server.hasArg("wifi_ssid") && server.hasArg("wifi_password")) {
 				wifi_ssid = server.arg("wifi_ssid");
 				wifi_password = server.arg("wifi_password");
 
-				server.send(200, "text/html", HTML::success);
+				String textContent = "Credentials received. Closing AP...";
+				if(textPos != std::string::npos) {
+					responseHTML.replace(textPos, 19, message);
+				}
+				server.send(200, "text/html; charset=utf-8", responseHTML);
+
 				delay(1000);
 				server.stop();
 				WiFi.softAPdisconnect(true);
@@ -75,7 +83,11 @@ namespace WiFiUtils
 			}
 			else
 			{
-				server.send(400, "text/html", "Invalid Input");
+				String textContent = "Invalid Input. Please go back and try again.";
+				if(textPos != std::string::npos) {
+					responseHTML.replace(textPos, 19, message);
+				}
+				server.send(400, "text/html; charset=utf-8", responseHTML);
 			}
 		});
 

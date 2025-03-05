@@ -252,7 +252,7 @@ namespace HTML
 </html>
 	)";
 
-	const char success[] = R"(
+	const char SSRNotice[] = R"(
 <!DOCTYPE html>
 <html>
 	<head>
