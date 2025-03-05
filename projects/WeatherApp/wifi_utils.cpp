@@ -61,16 +61,14 @@ namespace WiFiUtils
 
 		server.on("/submit", HTTP_POST, [&]() {
 			String responseHTML = HTML::SSRNotice;
-			size_t textContentPos = successHtml.find("<!-- textContent -->");
+			String placeholder = "<!-- textContent -->";
 
 			if(server.hasArg("wifi_ssid") && server.hasArg("wifi_password")) {
 				wifi_ssid = server.arg("wifi_ssid");
 				wifi_password = server.arg("wifi_password");
 
 				String textContent = "Credentials received. Closing AP...";
-				if(textPos != std::string::npos) {
-					responseHTML.replace(textPos, 19, message);
-				}
+				responseHTML.replace(placeholder, textContent);
 				server.send(200, "text/html; charset=utf-8", responseHTML);
 
 				delay(1000);
@@ -84,9 +82,7 @@ namespace WiFiUtils
 			else
 			{
 				String textContent = "Invalid Input. Please go back and try again.";
-				if(textPos != std::string::npos) {
-					responseHTML.replace(textPos, 19, message);
-				}
+				responseHTML.replace(placeholder, textContent);
 				server.send(400, "text/html; charset=utf-8", responseHTML);
 			}
 		});
