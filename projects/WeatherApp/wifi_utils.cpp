@@ -9,7 +9,7 @@
 
 namespace WiFiUtils
 {
-	const char *AP_SSID{"ESP32-AccessPoint"};
+	const char *AP_SSID{"Weather Station Setup"};
 	const char *AP_PASSWORD{""}; // No password
 
 	Preferences prefs;
