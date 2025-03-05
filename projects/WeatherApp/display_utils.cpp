@@ -46,7 +46,12 @@ namespace DisplayUtils
 		display.println("Connect to WiFi:");
 		display.setTextSize(1);
 		display.println("Name: " + String(AP_SSID));
-		display.println("Password: " + String(AP_PASSWORD));
+		// Only display password if it's not null and not empty
+		if(AP_PASSWORD != nullptr && AP_PASSWORD[0] != '\0')
+		{
+			display.println("Password: " + String(AP_PASSWORD));
+		}
+
 		display.setTextSize(2);
 		display.println("\nEnter WiFi Info:");
 		display.setTextSize(1);
