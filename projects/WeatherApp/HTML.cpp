@@ -8,7 +8,7 @@ namespace HTML
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Inkplate Terminal</title>
+	<title>Weather Station</title>
 	<style>
 		body {
 			background-color: #2a2723;
@@ -256,12 +256,84 @@ namespace HTML
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Login Page</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Weather Station</title>
+		<style>
+			body {
+				background-color: #2a2723;
+				font-family: 'Courier New', Courier, monospace;
+				color: #c4acac;
+				margin: 0;
+				padding: 20px;
+				min-height: 100vh;
+				position: relative;
+				overflow-x: hidden;
+			}
+
+			/* Scanline overlay effect */
+			body::after {
+				content: "";
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: repeating-linear-gradient(
+					0deg,
+					rgba(0,0,0,0.15) 0px,
+					rgba(0,0,0,0.15) 1px,
+					transparent 1px,
+					transparent 2px
+				);
+				pointer-events: none;
+				z-index: 999;
+			}
+
+			h2 {
+				text-align: center;
+				font-size: 24px;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				margin: 30px 0;
+				text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+				position: relative;
+				padding: 10px;
+				background: linear-gradient(to right, #c4acac 50%, #2a2723 100%);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+
+			label {
+				display: block;
+				text-align: left;
+				margin: 15px 0 5px;
+				font-size: 14px;
+				color: #908080;
+			}
+
+			@media (max-width: 480px) {
+				body {
+					padding: 15px;
+				}
+
+				form {
+					width: 100%;
+					padding: 20px 15px;
+				}
+
+				h2 {
+					font-size: 20px;
+					margin: 20px 0;
+				}
+			}
+		</style>
 	</head>
 	<body>
-		<h2>Credentials received. Closing AP...</h2>
+		<h2>
+			<!-- textContent -->
+		</h2>
 	</body>
 </html>
 	)";
-
 }
