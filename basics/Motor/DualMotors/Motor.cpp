@@ -24,26 +24,22 @@ namespace HardwareDevices
 	}
 
 	// Public
-	void Motor::rotate(short SPEED) {
+	void Motor::rotate(short SPEED) const
+	{
 		SPEED = constrain(SPEED, -255, 255);  // Limit to valid PWM range
 
-		if(SPEED > 0)
-		{
-			// Forwards
-			Serial.println("Forwards");
-			digitalWrite(DIRECTION_PIN, LOW);
-		}
-		else
-		{
-			// Reverse
-			Serial.println("Reverse");
-			digitalWrite(DIRECTION_PIN, HIGH);
-		}
+		// Determine if the rotation is "forward" based on inversion state and direction of speed (sign)
+		const bool isForwardRotation{
+			(SPEED > 0 && !isInverted) // If not inverted, speed is positive for forward direction
+				||
+				(SPEED < 0 && isInverted) // If inverted, speed is negative for forward direction
+		};
+		digitalWrite(DIRECTION_PIN, isForwardRotation ? LOW : HIGH); // LOW if forward rotation, HIGH for reverse
 
 		analogWrite(PWM_OUT_PIN, abs(SPEED)); // Ensure value is not negative
 	}
 
-	void Motor::stop()
+	void Motor::stop() const
 	{
 		digitalWrite(DIRECTION_PIN, LOW);
 		analogWrite(PWM_OUT_PIN, 0);
