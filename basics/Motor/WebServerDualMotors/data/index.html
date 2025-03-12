@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Motor Control</title>
+		<!-- Prevent accidental zooming-in -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<style>
+			body {
+				font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+				background-color: #f4f4f9;
+				margin: 0;
+				padding: 0;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				flex-direction: column;
+
+				/* Disable text selection */
+				user-select: none;
+				-webkit-user-select: none; /* For Safari */
+				-ms-user-select: none; /* For Internet Explorer/Edge */
+				-moz-user-select: none; /* For Firefox */
+			}
+
+			h1 {
+				font-size: 2rem;
+				margin-bottom: 30px;
+				color: #333;
+			}
+
+			.slider-container {
+				width: 90%;
+				margin: 10px 0;
+				padding: 15px 1%;
+				border-radius: 8px;
+				background-color: #fff;
+				box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+				text-align: center;
+			}
+
+			label {
+				display: block;
+				font-size: 1.2rem;
+				margin-bottom: 10px;
+				color: #333;
+			}
+
+			input[type="range"] {
+				width: 100%;
+				height: 50px;
+				border-radius: 25px;
+				background: #ddd;
+				-webkit-appearance: none;
+				outline: none;
+				transition: background 0.3s ease;
+			}
+
+			input[type="range"]:focus {
+				background: #888;
+			}
+
+			input[type="range"]::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				appearance: none;
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				background: #4CAF50;
+				cursor: pointer;
+				transition: background 0.2s ease;
+			}
+
+			input[type="range"]::-webkit-slider-thumb:hover {
+				background: #45a049;
+			}
+
+			input[type="range"]:active::-webkit-slider-thumb {
+				background: #388E3C;
+			}
+
+			#motorAValue, #motorBValue {
+				font-size: 1.5rem;
+				margin-top: 10px;
+				font-weight: bold;
+				color: #333;
+			}
+
+			@media (max-width: 600px) {
+				.slider-container {
+					width: 95%;
+				}
+
+				h1 {
+					font-size: 1.5rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Motor Control</h1>
+		<div class="slider-container">
+			<label for="motorA">Motor A:</label>
+			<input type="range" id="motorA" min="-255" max="255" value="0"
+				 oninput="updateMotor('A', this.value)"
+				 onmouseup="this.value=0; updateMotor('A', 0)"
+				 ontouchend="this.value=0; updateMotor('A', 0)">
+			<span id="motorAValue">0</span>
+		</div>
+		<div class="slider-container">
+			<label for="motorB">Motor B:</label>
+			<input type="range" id="motorB" min="-255" max="255" value="0"
+				 oninput="updateMotor('B', this.value)"
+				 onmouseup="this.value=0; updateMotor('B', 0)"
+				 ontouchend="this.value=0; updateMotor('B', 0)">
+			<span id="motorBValue">0</span>
+		</div>
+		<script>
+			var ws = new WebSocket('ws://' + window.location.hostname + ':81/');
+
+			function updateMotor(motor, value) {
+				document.getElementById('motor' + motor + 'Value').textContent = value;
+				if (ws.readyState === WebSocket.OPEN) {
+								ws.send(motor + ',' + value);
+							}
+			}
+		</script>
+	</body>
+</html>

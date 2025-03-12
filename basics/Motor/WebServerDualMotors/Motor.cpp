@@ -38,7 +38,7 @@ namespace HardwareDevices
 		}
 
 		speed = constrain(speed, -255, 255);  // Limit to valid PWM range
-		speed = (isInverted) ? (speed * -1 /* Invert speed back to normalise it */) : speed; 
+		speed = (isInverted) ? (speed * -1 /* Invert speed back to normalise it */) : speed;
 
 		bool isForwardDirection{true};
 		if(speed < 0)
