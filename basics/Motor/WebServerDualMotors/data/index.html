@@ -102,28 +102,28 @@
 		<div class="slider-container">
 			<label for="motorA">Motor A:</label>
 			<input type="range" id="motorA" min="-255" max="255" value="0"
-																 oninput="updateMotor('A', this.value)"
-																 onmouseup="this.value=0; updateMotor('A', 0)"
-																 ontouchend="this.value=0; updateMotor('A', 0)">
+				 oninput="updateMotor('A', this.value)"
+				 onmouseup="this.value=0; updateMotor('A', 0)"
+				 ontouchend="this.value=0; updateMotor('A', 0)">
 			<span id="motorAValue">0</span>
 		</div>
 		<div class="slider-container">
 			<label for="motorB">Motor B:</label>
 			<input type="range" id="motorB" min="-255" max="255" value="0"
-																 oninput="updateMotor('B', this.value)"
-																 onmouseup="this.value=0; updateMotor('B', 0)"
-																 ontouchend="this.value=0; updateMotor('B', 0)">
+				 oninput="updateMotor('B', this.value)"
+				 onmouseup="this.value=0; updateMotor('B', 0)"
+				 ontouchend="this.value=0; updateMotor('B', 0)">
 			<span id="motorBValue">0</span>
 		</div>
 		<script>
 			var ws = new WebSocket('ws://' + window.location.hostname + ':81/');
 
 			function updateMotor(motor, value) {
-							document.getElementById('motor' + motor + 'Value').textContent = value;
-							if (ws.readyState === WebSocket.OPEN) {
-											ws.send(motor + ',' + value);
-										}
-						}
+				document.getElementById('motor' + motor + 'Value').textContent = value;
+				if (ws.readyState === WebSocket.OPEN) {
+								ws.send(motor + ',' + value);
+							}
+			}
 		</script>
 	</body>
 </html>
